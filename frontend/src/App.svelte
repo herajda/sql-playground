@@ -3,8 +3,9 @@
   import { EditorState } from '@codemirror/state'
   import { EditorView, basicSetup } from 'codemirror'
   import { sql } from '@codemirror/lang-sql'
-// Use explicit ESM build to avoid resolution issues
-import mermaid from 'mermaid/dist/mermaid.esm.mjs'
+  import { keymap } from '@codemirror/view'
+  import { acceptCompletion } from '@codemirror/autocomplete'
+  import mermaid from 'mermaid/dist/mermaid.esm.mjs'
 
   let query = ''
   let editorContainer: HTMLDivElement
@@ -31,6 +32,7 @@ import mermaid from 'mermaid/dist/mermaid.esm.mjs'
       extensions: [
         basicSetup,
         sql(),
+        keymap.of([{ key: 'Tab', run: acceptCompletion }]),
         EditorView.updateListener.of((v) => {
           if (v.docChanged) {
             query = v.state.doc.toString()
