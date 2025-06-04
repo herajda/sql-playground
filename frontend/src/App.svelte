@@ -10,6 +10,8 @@
   let query = ''
   let editorContainer: HTMLDivElement
   let schemaContainer: HTMLDivElement
+  let showSchema = false
+  let schemaInitialized = false
   let results: any[] | null = null
   let columns: string[] = []
   let error: string | null = null
@@ -54,6 +56,11 @@
       nodeSpacing: 40,
       rankSpacing: 40
     })
+  })
+
+  function loadSchema() {
+    if (schemaInitialized) return
+    schemaInitialized = true
     fetch('http://localhost:5000/api/schema')
       .then((r) => r.json())
       .then((data) => {
@@ -63,7 +70,7 @@
           res.bindFunctions?.(schemaContainer)
         })
       })
-  })
+  }
 
   async function execute() {
     error = null
@@ -77,6 +84,15 @@
     error = data.error
     columns = data.columns || []
     results = data.results || []
+  }
+
+  function openSchema() {
+    showSchema = true
+    loadSchema()
+  }
+
+  function closeSchema() {
+    showSchema = false
   }
 </script>
 
@@ -112,8 +128,15 @@
       <p>No results.</p>
     {/if}
   {/if}
-  <h2>Database Schema</h2>
-  <div class="schema" bind:this={schemaContainer}></div>
+  <button on:click={openSchema}>Show Database Schema</button>
+  {#if showSchema}
+    <div class="modal-overlay" on:click={closeSchema}>
+      <div class="modal" on:click|stopPropagation>
+        <button class="close" on:click={closeSchema}>Close</button>
+        <div class="schema" bind:this={schemaContainer}></div>
+      </div>
+    </div>
+  {/if}
 </main>
 
 <style>
@@ -135,5 +158,31 @@
   }
   .schema :global(svg text) {
     font-size: 20px;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    background: var(--background, #fff);
+    padding: 1rem;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+  }
+
+  .close {
+    float: right;
   }
 </style>
