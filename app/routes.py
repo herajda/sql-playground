@@ -24,3 +24,16 @@ def query_api():
     except Exception as e:
         error = str(e)
     return jsonify({'results': results, 'columns': columns, 'error': error})
+
+
+@main.route('/api/schema', methods=['GET'])
+def schema_api():
+    """Return database schema information."""
+    tables = []
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+        for (name,) in cur.fetchall():
+            colcur = conn.execute(f"PRAGMA table_info({name})")
+            columns = [{'name': r[1], 'type': r[2]} for r in colcur.fetchall()]
+            tables.append({'name': name, 'columns': columns})
+    return jsonify({'tables': tables})

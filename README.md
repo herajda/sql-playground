@@ -20,8 +20,9 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 * [x] SQLite3 database with sample data
 * [x] Frontend input for SQL queries
 * [x] Output panel for query results or error messages
-* [ ] Schema visualization (ERD/UML-style)
+* [x] Schema visualization (ERD/UML-style)
 * [x] Syntax highlighting for the SQL editor
+* [x] UML-style schema viewer powered by Mermaid
 
 ## Setup Instructions
 
