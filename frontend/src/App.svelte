@@ -42,7 +42,7 @@
     })
     new EditorView({ state, parent: editorContainer })
 
-    mermaid.initialize({ startOnLoad: false })
+    mermaid.initialize({ startOnLoad: false, themeVariables: { fontSize: '16px' } })
     fetch('http://localhost:5000/api/schema')
       .then((r) => r.json())
       .then((data) => {
@@ -120,5 +120,8 @@
   }
   .schema :global(svg) {
     max-width: 100%;
+  }
+  .schema :global(svg text) {
+    font-size: 16px;
   }
 </style>
