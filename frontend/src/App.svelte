@@ -3,6 +3,8 @@
   import { EditorState } from '@codemirror/state'
   import { EditorView, basicSetup } from 'codemirror'
   import { sql } from '@codemirror/lang-sql'
+  import { keymap } from '@codemirror/view'
+  import { acceptCompletion } from '@codemirror/autocomplete'
 
   let query = ''
   let editorContainer: HTMLDivElement
@@ -16,6 +18,7 @@
       extensions: [
         basicSetup,
         sql(),
+        keymap.of([{ key: 'Tab', run: acceptCompletion }]),
         EditorView.updateListener.of((v) => {
           if (v.docChanged) {
             query = v.state.doc.toString()
