@@ -46,11 +46,11 @@
 
     mermaid.initialize({
       startOnLoad: false,
-      themeVariables: { fontSize: '20px' },
+      themeVariables: { fontSize: '32px' },
       er: {
-        fontSize: 20,
-        minEntityWidth: 120,
-        minEntityHeight: 80,
+        fontSize: 32,
+        minEntityWidth: 200,
+        minEntityHeight: 120,
         entityPadding: 15
       },
       nodeSpacing: 40,
@@ -93,6 +93,8 @@
 
   function closeSchema() {
     showSchema = false
+    schemaInitialized = false
+    if (schemaContainer) schemaContainer.innerHTML = ''
   }
 </script>
 
@@ -157,7 +159,7 @@
     height: auto;
   }
   .schema :global(svg text) {
-    font-size: 20px;
+    font-size: 32px;
   }
 
   .modal-overlay {
