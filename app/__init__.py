@@ -1,6 +1,7 @@
 # Initializes the Flask app
 
-import osfrom flask import Flask
+import os
+from flask import Flask
 
 
 def create_app():
