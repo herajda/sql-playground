@@ -1,8 +1,30 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+  import { EditorState } from '@codemirror/state'
+  import { EditorView, basicSetup } from 'codemirror'
+  import { sql } from '@codemirror/lang-sql'
+
   let query = ''
+  let editorContainer: HTMLDivElement
   let results: any[] | null = null
   let columns: string[] = []
   let error: string | null = null
+
+  onMount(() => {
+    const state = EditorState.create({
+      doc: query,
+      extensions: [
+        basicSetup,
+        sql(),
+        EditorView.updateListener.of((v) => {
+          if (v.docChanged) {
+            query = v.state.doc.toString()
+          }
+        })
+      ]
+    })
+    new EditorView({ state, parent: editorContainer })
+  })
 
   async function execute() {
     error = null
@@ -21,7 +43,7 @@
 
 <main>
   <h1>SQL Playground</h1>
-  <textarea bind:value={query} rows="4" cols="80"></textarea>
+  <div class="editor" bind:this={editorContainer}></div>
   <br>
   <button on:click={execute}>Execute</button>
   {#if error}
@@ -52,3 +74,14 @@
     {/if}
   {/if}
 </main>
+
+<style>
+  .editor {
+    border: 1px solid #ccc;
+    min-height: 5rem;
+    text-align: left;
+  }
+  .editor :global(.cm-gutters) {
+    display: none;
+  }
+</style>
