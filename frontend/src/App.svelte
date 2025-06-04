@@ -17,6 +17,7 @@
   let results: any[] | null = null
   let columns: string[] = []
   let error: string | null = null
+  let showSchema = false
 
   function generateMermaid(tables: { name: string; columns: { name: string; type: string }[] }[]) {
     const lines = ['erDiagram']
@@ -82,6 +83,10 @@
       })
   }
 
+  function toggleSchema() {
+    showSchema = !showSchema
+  }
+
   async function execute() {
     error = null
     results = null
@@ -115,6 +120,9 @@
   <div class="editor" bind:this={editorContainer}></div>
   <br>
   <button on:click={execute}>Execute</button>
+  <button on:click={toggleSchema} style="margin-left: 1rem">
+    {showSchema ? 'Hide Schema' : 'Show Database Schema'}
+  </button>
   {#if error}
     <p style="color:red">{error}</p>
   {/if}
