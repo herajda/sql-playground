@@ -48,15 +48,15 @@
 
     mermaid.initialize({
       startOnLoad: false,
-      themeVariables: { fontSize: '32px' },
+      themeVariables: { fontSize: '12px' },
       er: {
-        fontSize: 32,
-        minEntityWidth: 200,
-        minEntityHeight: 120,
-        entityPadding: 15
+        fontSize: 12,
+        minEntityWidth: 100,
+        minEntityHeight: 50,
+        entityPadding: 10,
+        nodeSpacing: -50,
+        rankSpacing: -100
       },
-      nodeSpacing: 40,
-      rankSpacing: 40
     })
   })
 
@@ -167,18 +167,17 @@
     display: none;
   }
   .schema {
-    margin-top: 1rem;
+    margin-top: 0rem;
     text-align: left;
     overflow: auto;
   }
   .schema :global(svg) {
     width: 100%;
     height: auto;
-    transform: scale(1.5);
     transform-origin: top left;
   }
   .schema :global(svg text) {
-    font-size: 32px;
+    font-size: 12px;
   }
 
   .modal-overlay {
