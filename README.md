@@ -25,4 +25,7 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 
 ## Setup Instructions
 
-*TODO: Add setup instructions once main features are implemented.*
+1. Install dependencies: `pip install -r requirements.txt`
+2. Initialize the database with `python init_db.py`
+3. Start the development server using `python run.py`
+4. Open [http://127.0.0.1:5000/](http://127.0.0.1:5000/) in your browser.
