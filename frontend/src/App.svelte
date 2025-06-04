@@ -169,10 +169,13 @@
   .schema {
     margin-top: 1rem;
     text-align: left;
+    overflow: auto;
   }
   .schema :global(svg) {
     width: 100%;
     height: auto;
+    transform: scale(1.5);
+    transform-origin: top left;
   }
   .schema :global(svg text) {
     font-size: 32px;
