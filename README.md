@@ -21,7 +21,7 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 * [x] Frontend input for SQL queries
 * [x] Output panel for query results or error messages
 * [ ] Schema visualization (ERD/UML-style)
-* [ ] Syntax highlighting (optional)
+* [x] Syntax highlighting for the SQL editor
 
 ## Setup Instructions
 
