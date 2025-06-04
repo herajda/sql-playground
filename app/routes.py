@@ -24,5 +24,3 @@ def query_api():
     except Exception as e:
         error = str(e)
     return jsonify({'results': results, 'columns': columns, 'error': error})
-
-
