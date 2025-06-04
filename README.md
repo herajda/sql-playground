@@ -18,14 +18,15 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 
 * [x] Flask web server scaffold
 * [x] SQLite3 database with sample data
-* [ ] Frontend input for SQL queries
-* [ ] Output panel for query results or error messages
+* [x] Frontend input for SQL queries
+* [x] Output panel for query results or error messages
 * [ ] Schema visualization (ERD/UML-style)
 * [ ] Syntax highlighting (optional)
 
 ## Setup Instructions
 
-1. Install dependencies: `pip install -r requirements.txt`
+1. Install backend dependencies: `pip install -r requirements.txt`
 2. Initialize the database with `python init_db.py`
-3. Start the development server using `python run.py`
-4. Open [http://127.0.0.1:5000/](http://127.0.0.1:5000/) in your browser.
+3. Start the Flask API using `python run.py` (default URL: [http://127.0.0.1:5000/](http://127.0.0.1:5000/))
+4. In `frontend/`, run `npm install` to install frontend packages.
+5. Launch the Svelte app with `npm run dev` and open [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
