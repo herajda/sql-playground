@@ -12,6 +12,8 @@
   let schemaContainer: HTMLDivElement
   let showSchema = false
   let schemaInitialized = false
+  let modalWidth = 'auto'
+  let modalHeight = 'auto'
   let results: any[] | null = null
   let columns: string[] = []
   let error: string | null = null
@@ -65,10 +67,18 @@
       .then((r) => r.json())
       .then((data) => {
         const diagram = generateMermaid(data.tables)
-        mermaid.render('schema', diagram, schemaContainer).then((res: { svg: string; bindFunctions?: (parent: Element) => void }) => {
-          schemaContainer.innerHTML = res.svg
-          res.bindFunctions?.(schemaContainer)
-        })
+        mermaid
+          .render('schema', diagram, schemaContainer)
+          .then((res: { svg: string; bindFunctions?: (parent: Element) => void }) => {
+            schemaContainer.innerHTML = res.svg
+            res.bindFunctions?.(schemaContainer)
+            const svg = schemaContainer.querySelector('svg') as SVGSVGElement | null
+            if (svg) {
+              const bbox = svg.getBBox()
+              modalWidth = Math.min(bbox.width + 40, window.innerWidth * 0.95) + 'px'
+              modalHeight = Math.min(bbox.height + 40, window.innerHeight * 0.95) + 'px'
+            }
+          })
       })
   }
 
@@ -95,6 +105,8 @@
     showSchema = false
     schemaInitialized = false
     if (schemaContainer) schemaContainer.innerHTML = ''
+    modalWidth = 'auto'
+    modalHeight = 'auto'
   }
 </script>
 
@@ -133,7 +145,11 @@
   <button on:click={openSchema}>Show Database Schema</button>
   {#if showSchema}
     <div class="modal-overlay" on:click={closeSchema}>
-      <div class="modal" on:click|stopPropagation>
+      <div
+        class="modal"
+        on:click|stopPropagation
+        style="width:{modalWidth}; height:{modalHeight}; max-width:95vw; max-height:95vh;"
+      >
         <button class="close" on:click={closeSchema}>Close</button>
         <div class="schema" bind:this={schemaContainer}></div>
       </div>
@@ -179,8 +195,8 @@
     background: var(--background, #fff);
     padding: 1rem;
     border-radius: 8px;
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 95vw;
+    max-height: 95vh;
     overflow: auto;
   }
 
