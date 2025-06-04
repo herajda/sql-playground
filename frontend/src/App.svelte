@@ -5,12 +5,26 @@
   import { sql } from '@codemirror/lang-sql'
   import { keymap } from '@codemirror/view'
   import { acceptCompletion } from '@codemirror/autocomplete'
+  import mermaid from 'mermaid/dist/mermaid.esm.mjs'
 
   let query = ''
   let editorContainer: HTMLDivElement
+  let schemaContainer: HTMLDivElement
   let results: any[] | null = null
   let columns: string[] = []
   let error: string | null = null
+
+  function generateMermaid(tables: { name: string; columns: { name: string; type: string }[] }[]) {
+    const lines = ['erDiagram']
+    for (const table of tables) {
+      lines.push(`  ${table.name} {`)
+      for (const col of table.columns) {
+        lines.push(`    ${col.type} ${col.name}`)
+      }
+      lines.push('  }')
+    }
+    return lines.join('\n')
+  }
 
   onMount(() => {
     const state = EditorState.create({
@@ -27,6 +41,17 @@
       ]
     })
     new EditorView({ state, parent: editorContainer })
+
+    mermaid.initialize({ startOnLoad: false })
+    fetch('http://localhost:5000/api/schema')
+      .then((r) => r.json())
+      .then((data) => {
+        const diagram = generateMermaid(data.tables)
+        mermaid.render('schema', diagram, schemaContainer).then((res: { svg: string; bindFunctions?: (parent: Element) => void }) => {
+          schemaContainer.innerHTML = res.svg
+          res.bindFunctions?.(schemaContainer)
+        })
+      })
   })
 
   async function execute() {
@@ -76,6 +101,8 @@
       <p>No results.</p>
     {/if}
   {/if}
+  <h2>Database Schema</h2>
+  <div class="schema" bind:this={schemaContainer}></div>
 </main>
 
 <style>
@@ -86,5 +113,12 @@
   }
   .editor :global(.cm-gutters) {
     display: none;
+  }
+  .schema {
+    margin-top: 1rem;
+    text-align: left;
+  }
+  .schema :global(svg) {
+    max-width: 100%;
   }
 </style>
