@@ -153,10 +153,13 @@
   .schema {
     margin-top: 1rem;
     text-align: left;
+    overflow: auto;
   }
   .schema :global(svg) {
     width: 100%;
     height: auto;
+    transform: scale(1.5);
+    transform-origin: top left;
   }
   .schema :global(svg text) {
     font-size: 32px;
@@ -179,8 +182,10 @@
     background: var(--background, #fff);
     padding: 1rem;
     border-radius: 8px;
-    max-width: 90%;
-    max-height: 90%;
+    width: 95%;
+    height: 95%;
+    max-width: none;
+    max-height: none;
     overflow: auto;
   }
 
