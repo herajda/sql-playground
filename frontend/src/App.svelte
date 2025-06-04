@@ -42,7 +42,18 @@
     })
     new EditorView({ state, parent: editorContainer })
 
-    mermaid.initialize({ startOnLoad: false })
+    mermaid.initialize({
+      startOnLoad: false,
+      themeVariables: { fontSize: '20px' },
+      er: {
+        fontSize: 20,
+        minEntityWidth: 120,
+        minEntityHeight: 80,
+        entityPadding: 15
+      },
+      nodeSpacing: 40,
+      rankSpacing: 40
+    })
     fetch('http://localhost:5000/api/schema')
       .then((r) => r.json())
       .then((data) => {
@@ -119,6 +130,10 @@
     text-align: left;
   }
   .schema :global(svg) {
-    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
+  .schema :global(svg text) {
+    font-size: 20px;
   }
 </style>
