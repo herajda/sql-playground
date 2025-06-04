@@ -3,7 +3,8 @@
   import { EditorState } from '@codemirror/state'
   import { EditorView, basicSetup } from 'codemirror'
   import { sql } from '@codemirror/lang-sql'
-  import mermaid from 'mermaid'
+// Use explicit ESM build to avoid resolution issues
+import mermaid from 'mermaid/dist/mermaid.esm.mjs'
 
   let query = ''
   let editorContainer: HTMLDivElement
@@ -44,9 +45,9 @@
       .then((r) => r.json())
       .then((data) => {
         const diagram = generateMermaid(data.tables)
-        mermaid.render('schema', diagram, schemaContainer).then(({ svg, bindFunctions }) => {
-          schemaContainer.innerHTML = svg
-          bindFunctions?.(schemaContainer)
+        mermaid.render('schema', diagram, schemaContainer).then((res: { svg: string; bindFunctions?: (parent: Element) => void }) => {
+          schemaContainer.innerHTML = res.svg
+          res.bindFunctions?.(schemaContainer)
         })
       })
   })
