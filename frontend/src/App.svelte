@@ -79,5 +79,9 @@
   .editor {
     border: 1px solid #ccc;
     min-height: 5rem;
+    text-align: left;
+  }
+  .editor :global(.cm-gutters) {
+    display: none;
   }
 </style>
