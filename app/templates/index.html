@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+    <title>SQL Playground</title>
+</head>
+<body>
+    <h1>SQL Playground</h1>
+    <form method="post" action="/">
+        <textarea name="query" rows="4" cols="80"></textarea><br>
+        <input type="submit" value="Execute">
+    </form>
+    {% if error %}
+    <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    {% if results is not none %}
+        {% if results %}
+        <table border="1">
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    {% for value in row %}
+                    <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No results.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
