@@ -17,6 +17,13 @@
   let results: any[] | null = null
   let columns: string[] = []
   let error: string | null = null
+  let showSchema = false
+  let adminMode = false
+  let adminPassword = ''
+  let dbs: string[] = []
+  let activeDb = ''
+  let uploadFile: File | null = null
+  let adminError: string | null = null
 
   function generateMermaid(tables: { name: string; columns: { name: string; type: string }[] }[]) {
     const lines = ['erDiagram']
@@ -80,6 +87,44 @@
             }
           })
       })
+  }
+
+  async function loadDatabases() {
+    adminError = null
+    const res = await fetch('http://localhost:5000/api/admin/databases', {
+      headers: { 'X-Admin-Password': adminPassword }
+    })
+    if (!res.ok) {
+      adminError = 'Invalid password'
+      return
+    }
+    const data = await res.json()
+    dbs = data.databases
+    activeDb = data.active
+  }
+
+  async function upload() {
+    if (!uploadFile) return
+    const fd = new FormData()
+    fd.append('file', uploadFile)
+    await fetch('http://localhost:5000/api/admin/upload', {
+      method: 'POST',
+      headers: { 'X-Admin-Password': adminPassword },
+      body: fd
+    })
+    await loadDatabases()
+  }
+
+  async function activate(name: string) {
+    await fetch('http://localhost:5000/api/admin/activate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Password': adminPassword
+      },
+      body: JSON.stringify({ name })
+    })
+    await loadDatabases()
   }
 
   async function execute() {
@@ -155,6 +200,38 @@
       </div>
     </div>
   {/if}
+
+  <button on:click={() => (adminMode = !adminMode)} style="margin-top: 1rem">
+    {adminMode ? 'Close Admin' : 'Admin Mode'}
+  </button>
+  {#if adminMode}
+    <div class="admin">
+      <input
+        type="password"
+        placeholder="Password"
+        bind:value={adminPassword}
+      />
+      <button on:click={loadDatabases}>Load</button>
+      {#if adminError}
+        <p style="color:red">{adminError}</p>
+      {/if}
+      {#if dbs.length}
+        <p>Active DB: {activeDb}</p>
+        <ul>
+          {#each dbs as db}
+            <li>
+              {db}
+              {#if db !== activeDb}
+                <button on:click={() => activate(db)}>Activate</button>
+              {/if}
+            </li>
+          {/each}
+        </ul>
+      {/if}
+      <input type="file" accept=".db" on:change={(e) => (uploadFile = e.target.files[0])} />
+      <button on:click={upload}>Upload</button>
+    </div>
+  {/if}
 </main>
 
 <style>
@@ -204,5 +281,12 @@
 
   .close {
     float: right;
+  }
+  .admin {
+    margin-top: 1rem;
+    text-align: left;
+  }
+  .admin input[type='password'] {
+    margin-right: 0.5rem;
   }
 </style>

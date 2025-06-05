@@ -1,6 +1,22 @@
+import os
 import sqlite3
-from flask import Blueprint, request, jsonify
-from init_db import DB_PATH
+from flask import Blueprint, request, jsonify, abort
+from werkzeug.utils import secure_filename
+from .db_manager import (
+    get_active_db,
+    set_active_db,
+    list_databases,
+    UPLOAD_DIR,
+    DEFAULT_DB,
+)
+
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+
+
+def require_admin(req):
+    pwd = req.headers.get("X-Admin-Password")
+    if pwd != ADMIN_PASSWORD:
+        abort(401)
 
 main = Blueprint('main', __name__)
 
@@ -14,7 +30,7 @@ def query_api():
     columns = []
     error = None
     try:
-        with sqlite3.connect(DB_PATH) as conn:
+        with sqlite3.connect(get_active_db()) as conn:
             cursor = conn.execute(query)
             if cursor.description:
                 columns = [d[0] for d in cursor.description]
@@ -30,10 +46,52 @@ def query_api():
 def schema_api():
     """Return database schema information."""
     tables = []
-    with sqlite3.connect(DB_PATH) as conn:
+    with sqlite3.connect(get_active_db()) as conn:
         cur = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
         for (name,) in cur.fetchall():
             colcur = conn.execute(f"PRAGMA table_info({name})")
             columns = [{'name': r[1], 'type': r[2]} for r in colcur.fetchall()]
             tables.append({'name': name, 'columns': columns})
     return jsonify({'tables': tables})
+
+
+@main.route('/api/admin/databases', methods=['GET'])
+def admin_list():
+    """List stored databases and currently active one."""
+    require_admin(request)
+    dbs = list_databases()
+    active = os.path.basename(get_active_db())
+    return jsonify({'databases': dbs, 'active': active})
+
+
+@main.route('/api/admin/upload', methods=['POST'])
+def admin_upload():
+    """Upload a new database file."""
+    require_admin(request)
+    if 'file' not in request.files:
+        return jsonify({'error': 'missing file'}), 400
+    f = request.files['file']
+    filename = secure_filename(f.filename)
+    if not filename.endswith('.db'):
+        return jsonify({'error': 'only .db files allowed'}), 400
+    dest = os.path.join(UPLOAD_DIR, filename)
+    f.save(dest)
+    return jsonify({'status': 'ok'})
+
+
+@main.route('/api/admin/activate', methods=['POST'])
+def admin_activate():
+    """Activate one of the stored databases."""
+    require_admin(request)
+    data = request.get_json(force=True)
+    name = data.get('name')
+    if not name:
+        return jsonify({'error': 'missing name'}), 400
+    # check uploads first
+    candidate = os.path.join(UPLOAD_DIR, name)
+    if not os.path.exists(candidate):
+        candidate = os.path.join(os.path.dirname(DEFAULT_DB), name)
+        if not os.path.exists(candidate):
+            return jsonify({'error': 'not found'}), 404
+    set_active_db(candidate)
+    return jsonify({'status': 'ok'})

@@ -23,6 +23,7 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 * [x] Schema visualization (ERD/UML-style)
 * [x] Syntax highlighting for the SQL editor
 * [x] UML-style schema viewer powered by Mermaid
+* [x] Password protected admin mode to manage databases
 
 ## Setup Instructions
 
@@ -31,3 +32,4 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 3. Start the Flask API using `python run.py` (default URL: [http://127.0.0.1:5000/](http://127.0.0.1:5000/))
 4. In `frontend/`, run `npm install` to install frontend packages.
 5. Launch the Svelte app with `npm run dev` and open [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
+6. Admin endpoints require the `X-Admin-Password` header. The default password is `admin123`.
