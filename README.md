@@ -24,6 +24,7 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 * [x] Syntax highlighting for the SQL editor
 * [x] UML-style schema viewer powered by Mermaid
 * [x] Password protected admin mode to manage databases
+* [x] Create databases from SQL scripts in the admin interface
 
 ## Setup Instructions
 
@@ -34,3 +35,4 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 5. Launch the Svelte app with `npm run dev` and open [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
 6. Admin endpoints require the `X-Admin-Password` header. The default password is `admin123`.
 7. The admin interface is available at `/admin` and requires the same password.
+8. The admin page also lets you create a new database by entering SQL.

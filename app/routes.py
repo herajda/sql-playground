@@ -114,3 +114,29 @@ def admin_delete():
         set_active_db(DEFAULT_DB)
     os.remove(path)
     return jsonify({'status': 'ok'})
+
+
+@main.route('/api/admin/create', methods=['POST'])
+def admin_create():
+    """Create a new database from a SQL script."""
+    require_admin(request)
+    data = request.get_json(force=True)
+    name = data.get('name')
+    schema = data.get('schema')
+    if not name or not name.endswith('.db'):
+        return jsonify({'error': 'invalid name'}), 400
+    if not schema:
+        return jsonify({'error': 'missing schema'}), 400
+    filename = secure_filename(name)
+    dest = os.path.join(UPLOAD_DIR, filename)
+    if os.path.exists(dest):
+        return jsonify({'error': 'already exists'}), 400
+    try:
+        with sqlite3.connect(dest) as conn:
+            conn.executescript(schema)
+            conn.commit()
+    except Exception as e:
+        if os.path.exists(dest):
+            os.remove(dest)
+        return jsonify({'error': str(e)}), 400
+    return jsonify({'status': 'ok'})
