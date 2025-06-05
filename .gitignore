@@ -48,6 +48,7 @@ coverage/
 *.sqlite
 *.db
 *.sqlite3
+generated_init_db.py
 
 # Optional: macOS crash reports
 *.crash

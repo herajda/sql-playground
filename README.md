@@ -25,6 +25,7 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 * [x] UML-style schema viewer powered by Mermaid
 * [x] Password protected admin mode to manage databases
 * [x] Create databases from SQL scripts in the admin interface
+* [x] Generate databases using OpenAI (via admin UI or `openai_db_creator.py`)
 
 ## Setup Instructions
 
@@ -36,3 +37,4 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 6. Admin endpoints require the `X-Admin-Password` header. The default password is `admin123`.
 7. The admin interface is available at `/admin` and requires the same password.
 8. The admin page also lets you create a new database by entering SQL or uploading a schema file.
+9. For OpenAI-assisted database generation create a `.env` file with `OPENAI_API_KEY=<your key>` and either run `python openai_db_creator.py` or use the admin page's "Create With OpenAI" form.
