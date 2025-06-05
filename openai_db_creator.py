@@ -13,7 +13,7 @@ OUTPUT_SCRIPT = Path("generated_init_db.py")
 
 def create_database(user_request: str, db_path: str) -> tuple[bool, str]:
     """Generate and run a DB init script via OpenAI."""
-
+    print(f"db_path: {db_path}") 
     load_dotenv()  # Load environment variables from .env file if it exists 
     api_key = os.getenv("OPENAI_API_KEY")
     client = OpenAI(api_key=api_key)
@@ -28,6 +28,7 @@ def create_database(user_request: str, db_path: str) -> tuple[bool, str]:
         "You are an assistant that generates Python scripts to create SQLite databases.\n"
         "Use the following template as a inspiration.\n"
         "The script should write to the path provided in DB_PATH and, if requested, populate it with random data.\n"
+        "The DB_PATH should be the first argument to the script.\n"
         "Template:\n" + template + "\n" +
         "User request:\n" + user_request + "\n"
         "Provide only the Python code in your response. The Python code should be a complete script that can be run to create the database.\n"
@@ -49,13 +50,9 @@ def create_database(user_request: str, db_path: str) -> tuple[bool, str]:
         OUTPUT_SCRIPT.write_text(code, encoding="utf-8")
     except Exception as e:
         return False, f"Failed to save generated script: {e}"
-
-    env = os.environ.copy()
-    env["DB_PATH"] = db_path
-
-
+    
     try:
-        subprocess.run(["python", str(OUTPUT_SCRIPT)], check=True, env=env)
+        subprocess.run(["python", str(OUTPUT_SCRIPT), db_path], check=True)
     except subprocess.CalledProcessError as e:
         return False, f"Generated script failed: {e}"
 
