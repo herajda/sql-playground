@@ -26,6 +26,7 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 * [x] Password protected admin mode to manage databases
 * [x] Create databases from SQL scripts in the admin interface
 * [x] Generate databases using OpenAI (via admin UI or `openai_db_creator.py`)
+* [x] Toggle read-only mode to prevent modification queries
 
 ## Setup Instructions
 
@@ -39,3 +40,4 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 8. The admin interface is available at `/admin` and requires the same password.
 9. The admin page also lets you create a new database by entering SQL or uploading a schema file.
 10. For OpenAI-assisted database generation add `OPENAI_API_KEY=<your key>` to `.env` and either run `python openai_db_creator.py` or use the admin page's "Create With OpenAI" form.
+11. Use the admin page's "Read Only Mode" checkbox to control whether regular users can modify the database.

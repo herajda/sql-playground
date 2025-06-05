@@ -16,6 +16,7 @@ import { afterUpdate } from 'svelte'
   let createSQL = ''
   let schemaFile: File | null = null
   let openaiRequest = ''
+  let readOnly = true
   let loading = false
   let editorContainer: HTMLDivElement
   let editorInitialized = false
@@ -37,6 +38,28 @@ import { afterUpdate } from 'svelte'
     dbs = data.databases
     activeDb = data.active
     loggedIn = true
+    await loadSettings()
+  }
+
+  async function loadSettings() {
+    const res = await fetch('http://localhost:5000/api/admin/settings', {
+      headers: { 'X-Admin-Password': password }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      readOnly = data.read_only
+    }
+  }
+
+  async function toggleReadOnly() {
+    await fetch('http://localhost:5000/api/admin/settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Password': password
+      },
+      body: JSON.stringify({ read_only: readOnly })
+    })
   }
 
   async function upload() {
@@ -189,6 +212,10 @@ import { afterUpdate } from 'svelte'
   {:else}
     <button on:click={() => (loggedIn = false)}>Logout</button>
     <p>Active DB: {activeDb}</p>
+    <label>
+      <input type="checkbox" bind:checked={readOnly} on:change={toggleReadOnly} />
+      Read Only Mode
+    </label>
     <table class="db-table">
       <thead>
         <tr>

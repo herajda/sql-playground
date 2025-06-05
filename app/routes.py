@@ -9,6 +9,7 @@ from .db_manager import (
     UPLOAD_DIR,
     DEFAULT_DB,
 )
+from .settings import get_read_only, set_read_only
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 
@@ -26,6 +27,12 @@ def query_api():
     """Execute SQL query and return JSON response."""
     data = request.get_json(force=True)
     query = data.get('query', '')
+    if get_read_only():
+        statements = [s.strip() for s in query.split(';') if s.strip()]
+        for stmt in statements:
+            first = stmt.split()[0].upper() if stmt.split() else ''
+            if first not in {'SELECT', 'WITH', 'PRAGMA', 'EXPLAIN'}:
+                return jsonify({'results': [], 'columns': [], 'error': 'Database modifications are disabled.'})
     results = []
     columns = []
     error = None
@@ -84,6 +91,19 @@ def admin_list():
     dbs = list_databases()
     active = os.path.basename(get_active_db())
     return jsonify({'databases': dbs, 'active': active})
+
+
+@main.route('/api/admin/settings', methods=['GET', 'POST'])
+def admin_settings():
+    """Get or update server settings."""
+    require_admin(request)
+    if request.method == 'POST':
+        data = request.get_json(force=True)
+        ro = data.get('read_only')
+        if isinstance(ro, bool):
+            set_read_only(ro)
+        return jsonify({'status': 'ok', 'read_only': get_read_only()})
+    return jsonify({'read_only': get_read_only()})
 
 
 @main.route('/api/admin/upload', methods=['POST'])
