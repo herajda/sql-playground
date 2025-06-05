@@ -1,10 +1,20 @@
 <script lang="ts">
+  import { EditorState } from '@codemirror/state'
+  import { EditorView, basicSetup } from 'codemirror'
+  import { sql } from '@codemirror/lang-sql'
+  import { keymap } from '@codemirror/view'
+  import { acceptCompletion } from '@codemirror/autocomplete'
+
   let password = ''
   let dbs: string[] = []
   let activeDb = ''
   let uploadFile: File | null = null
   let error: string | null = null
   let loggedIn = false
+  let createName = ''
+  let createSQL = ''
+  let editorContainer: HTMLDivElement
+  let editorInitialized = false
 
   async function login() {
     error = null
@@ -57,6 +67,40 @@
     })
     await login()
   }
+
+  async function createDb() {
+    await fetch('http://localhost:5000/api/admin/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Password': password
+      },
+      body: JSON.stringify({ name: createName, schema: createSQL })
+    })
+    createName = ''
+    await login()
+  }
+
+  function initEditor() {
+    if (editorInitialized || !editorContainer) return
+    const state = EditorState.create({
+      doc: createSQL,
+      extensions: [
+        basicSetup,
+        sql(),
+        keymap.of([{ key: 'Tab', run: acceptCompletion }]),
+        EditorView.updateListener.of((v) => {
+          if (v.docChanged) {
+            createSQL = v.state.doc.toString()
+          }
+        })
+      ]
+    })
+    new EditorView({ state, parent: editorContainer })
+    editorInitialized = true
+  }
+
+  $: if (loggedIn) initEditor()
 </script>
 
 <main>
@@ -89,6 +133,15 @@
     </ul>
     <input type="file" accept=".db" on:change={(e) => (uploadFile = e.target.files[0])} />
     <button on:click={upload}>Upload</button>
+
+    <h2>Create Database</h2>
+    <input
+      type="text"
+      placeholder="Name (example.db)"
+      bind:value={createName}
+    />
+    <div class="editor" bind:this={editorContainer}></div>
+    <button on:click={createDb}>Create</button>
   {/if}
 </main>
 
@@ -99,5 +152,15 @@
   }
   input[type='password'] {
     margin-right: 0.5rem;
+  }
+
+  .editor {
+    border: 1px solid #ccc;
+    min-height: 5rem;
+    text-align: left;
+    margin-top: 0.5rem;
+  }
+  .editor :global(.cm-gutters) {
+    display: none;
   }
 </style>
