@@ -61,9 +61,9 @@
 
     mermaid.initialize({
       startOnLoad: false,
-      themeVariables: { fontSize: '12px' },
+      themeVariables: { fontSize: '22px' },
       er: {
-        fontSize: 22,
+        fontSize: 33,
 
         minEntityWidth: 300,
         minEntityHeight: 300,
@@ -168,7 +168,7 @@
   .layout {
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: 8fr 5fr 8fr;
+    grid-template-columns: 8fr 3fr 8fr;
     gap: 1rem;
     align-items: flex-start;
   }
