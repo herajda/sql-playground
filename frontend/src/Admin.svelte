@@ -189,19 +189,34 @@ import { afterUpdate } from 'svelte'
   {:else}
     <button on:click={() => (loggedIn = false)}>Logout</button>
     <p>Active DB: {activeDb}</p>
-    <ul>
-      {#each dbs as db}
-        <li>
-          {db}
-          {#if db !== activeDb}
-            <button on:click={() => activate(db)}>Activate</button>
-          {/if}
-          {#if db !== 'playground.db'}
-            <button on:click={() => remove(db)}>Delete</button>
-          {/if}
-        </li>
-      {/each}
-    </ul>
+    <table class="db-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each dbs as db}
+          <tr class:active={db === activeDb}>
+            <td>{db}</td>
+            <td>
+              {#if db === activeDb}
+                Active
+              {:else}
+                <button on:click={() => activate(db)}>Activate</button>
+              {/if}
+            </td>
+            <td>
+              {#if db !== 'playground.db'}
+                <button on:click={() => remove(db)}>Delete</button>
+              {/if}
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
     <input
       type="file"
       accept=".db"
@@ -347,5 +362,21 @@ import { afterUpdate } from 'svelte'
   @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
+
+  .db-table {
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+
+  .db-table th,
+  .db-table td {
+    border: 1px solid #ccc;
+    padding: 0.25rem 0.5rem;
+    text-align: left;
+  }
+
+  .db-table tr.active {
+    background-color: rgba(100, 108, 255, 0.2);
   }
 </style>
