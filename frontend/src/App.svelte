@@ -171,9 +171,9 @@
   }
   .actions {
     margin: 0.5rem 0;
-  }
-  .actions button + button {
-    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   .schema {
     margin-top: 0rem;
