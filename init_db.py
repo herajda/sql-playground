@@ -7,7 +7,9 @@ import random
 import string
 from datetime import datetime, timedelta
 
-DB_PATH = os.path.join('app', 'db', 'playground.db')
+from app.db_manager import DEFAULT_DB
+
+DB_PATH = DEFAULT_DB
 
 # How much fake data?
 N_USERS = 50
