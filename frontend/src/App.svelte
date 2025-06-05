@@ -140,7 +140,7 @@
   {/if}
   {#if results !== null}
     {#if results.length}
-      <table border="1">
+      <table class="results-table" border="1">
         <thead>
           <tr>
             {#each columns as col}
@@ -192,6 +192,11 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+  }
+
+  .results-table {
+    margin-left: auto;
+    margin-right: auto;
   }
   .schema {
     margin-top: 0rem;
