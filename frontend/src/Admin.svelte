@@ -14,6 +14,7 @@ import { afterUpdate } from 'svelte'
   let loggedIn = false
   let createName = ''
   let createSQL = ''
+  let schemaFile: File | null = null
   let editorContainer: HTMLDivElement
   let editorInitialized = false
 
@@ -82,6 +83,21 @@ import { afterUpdate } from 'svelte'
     await login()
   }
 
+  async function createDbFromFile() {
+    if (!schemaFile) return
+    const fd = new FormData()
+    fd.append('file', schemaFile)
+    fd.append('name', createName)
+    await fetch('http://localhost:5000/api/admin/create_from_file', {
+      method: 'POST',
+      headers: { 'X-Admin-Password': password },
+      body: fd
+    })
+    createName = ''
+    schemaFile = null
+    await login()
+  }
+
   function initEditor() {
     if (editorInitialized || !editorContainer) return
     const state = EditorState.create({
@@ -106,7 +122,7 @@ import { afterUpdate } from 'svelte'
   })
 </script>
 
-<main>
+<main class="admin">
   <h1>Admin</h1>
   {#if !loggedIn}
     <input
@@ -134,7 +150,14 @@ import { afterUpdate } from 'svelte'
         </li>
       {/each}
     </ul>
-    <input type="file" accept=".db" on:change={(e) => (uploadFile = e.target.files[0])} />
+    <input
+      type="file"
+      accept=".db"
+      on:change={(e) => {
+        const input = e.target as HTMLInputElement
+        uploadFile = input.files?.[0] || null
+      }}
+    />
     <button on:click={upload}>Upload</button>
 
     <h2>Create Database</h2>
@@ -145,6 +168,17 @@ import { afterUpdate } from 'svelte'
     />
     <div class="editor" bind:this={editorContainer}></div>
     <button on:click={createDb}>Create</button>
+    <div class="file-create">
+      <input
+        type="file"
+        accept=".sql,.txt"
+        on:change={(e) => {
+          const input = e.target as HTMLInputElement
+          schemaFile = input.files?.[0] || null
+        }}
+      />
+      <button on:click={createDbFromFile}>Create From File</button>
+    </div>
   {/if}
 </main>
 
@@ -165,5 +199,9 @@ import { afterUpdate } from 'svelte'
   }
   .editor :global(.cm-gutters) {
     display: none;
+  }
+
+  .file-create {
+    margin-top: 0.5rem;
   }
 </style>
