@@ -13,7 +13,6 @@ OUTPUT_SCRIPT = Path("generated_init_db.py")
 
 def create_database(user_request: str, db_path: str) -> tuple[bool, str]:
     """Generate and run a DB init script via OpenAI."""
-    print(f"db_path: {db_path}") 
     load_dotenv()  # Load environment variables from .env file if it exists 
     api_key = os.getenv("OPENAI_API_KEY")
     client = OpenAI(api_key=api_key)
