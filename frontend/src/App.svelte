@@ -114,8 +114,10 @@
 <main>
   <h1>SQL Playground</h1>
   <div class="editor" bind:this={editorContainer}></div>
-  <br>
-  <button on:click={execute}>Execute</button>
+  <div class="actions">
+    <button on:click={execute}>Execute</button>
+    <button on:click={openSchema}>Show Database Schema</button>
+  </div>
   {#if error}
     <p style="color:red">{error}</p>
   {/if}
@@ -143,7 +145,6 @@
       <p>No results.</p>
     {/if}
   {/if}
-  <button on:click={openSchema}>Show Database Schema</button>
   {#if showSchema}
     <div class="modal-overlay" on:click={closeSchema}>
       <div
@@ -167,6 +168,12 @@
   }
   .editor :global(.cm-gutters) {
     display: none;
+  }
+  .actions {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   .schema {
     margin-top: 0rem;
