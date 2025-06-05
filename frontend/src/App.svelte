@@ -63,10 +63,11 @@
       startOnLoad: false,
       themeVariables: { fontSize: '12px' },
       er: {
-        fontSize: 12,
-        minEntityWidth: 100,
-        minEntityHeight: 100,
-        entityPadding: 10,
+        fontSize: 22,
+
+        minEntityWidth: 300,
+        minEntityHeight: 300,
+        entityPadding: 40,
         nodeSpacing: 100,
         rankSpacing: 100
       },
@@ -108,7 +109,6 @@
 </script>
 
 <main>
-  <h1>SQL Playground</h1>
   <div class="layout">
     <div class="left">
       <div class="editor-section">
@@ -168,7 +168,7 @@
   .layout {
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 8fr 5fr 8fr;
     gap: 1rem;
     align-items: flex-start;
   }
@@ -201,8 +201,8 @@
   }
 
   .results-table {
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 1rem;
+    margin-right: 1rem;
     width: 100%;
   }
   .schema {
