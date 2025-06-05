@@ -167,3 +167,27 @@ def admin_create_from_file():
             os.remove(dest)
         return jsonify({'error': str(e)}), 400
     return jsonify({'status': 'ok'})
+
+
+@main.route('/api/admin/openai_create', methods=['POST'])
+def admin_openai_create():
+    """Create a new database using OpenAI-generated code."""
+    require_admin(request)
+    data = request.get_json(force=True)
+    name = data.get('name')
+    prompt = data.get('prompt')
+    if not name or not name.endswith('.db'):
+        return jsonify({'error': 'invalid name'}), 400
+    if not prompt:
+        return jsonify({'error': 'missing prompt'}), 400
+    filename = secure_filename(name)
+    dest = os.path.join(UPLOAD_DIR, filename)
+    if os.path.exists(dest):
+        return jsonify({'error': 'already exists'}), 400
+    from openai_db_creator import create_database
+    success, msg = create_database(prompt, dest)
+    if not success:
+        if os.path.exists(dest):
+            os.remove(dest)
+        return jsonify({'error': msg}), 400
+    return jsonify({'status': 'ok', 'message': msg})

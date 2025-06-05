@@ -15,6 +15,7 @@ import { afterUpdate } from 'svelte'
   let createName = ''
   let createSQL = ''
   let schemaFile: File | null = null
+  let openaiRequest = ''
   let editorContainer: HTMLDivElement
   let editorInitialized = false
 
@@ -98,6 +99,20 @@ import { afterUpdate } from 'svelte'
     await login()
   }
 
+  async function createDbWithOpenAI() {
+    await fetch('http://localhost:5000/api/admin/openai_create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Password': password
+      },
+      body: JSON.stringify({ name: createName, prompt: openaiRequest })
+    })
+    createName = ''
+    openaiRequest = ''
+    await login()
+  }
+
   function initEditor() {
     if (editorInitialized || !editorContainer) return
     const state = EditorState.create({
@@ -167,20 +182,27 @@ import { afterUpdate } from 'svelte'
       bind:value={createName}
     />
     <div class="editor" bind:this={editorContainer}></div>
-    <button on:click={createDb}>Create</button>
-    <div class="file-create">
-      <input
-        type="file"
-        accept=".sql,.txt"
+      <button on:click={createDb}>Create</button>
+      <div class="file-create">
+        <input
+          type="file"
+          accept=".sql,.txt"
         on:change={(e) => {
           const input = e.target as HTMLInputElement
           schemaFile = input.files?.[0] || null
         }}
-      />
-      <button on:click={createDbFromFile}>Create From File</button>
-    </div>
-  {/if}
-</main>
+        />
+        <button on:click={createDbFromFile}>Create From File</button>
+      </div>
+      <h2>Create With OpenAI</h2>
+      <textarea
+        rows="3"
+        placeholder="Describe the desired database"
+        bind:value={openaiRequest}
+      ></textarea>
+      <button on:click={createDbWithOpenAI}>Create With OpenAI</button>
+    {/if}
+  </main>
 
 <style>
   .admin {
@@ -202,6 +224,11 @@ import { afterUpdate } from 'svelte'
   }
 
   .file-create {
+    margin-top: 0.5rem;
+  }
+
+  textarea {
+    width: 100%;
     margin-top: 0.5rem;
   }
 </style>
