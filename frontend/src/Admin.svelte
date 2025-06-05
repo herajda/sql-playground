@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { EditorState } from '@codemirror/state'
-  import { EditorView, basicSetup } from 'codemirror'
-  import { sql } from '@codemirror/lang-sql'
-  import { keymap } from '@codemirror/view'
-  import { acceptCompletion } from '@codemirror/autocomplete'
+import { EditorState } from '@codemirror/state'
+import { EditorView, basicSetup } from 'codemirror'
+import { sql } from '@codemirror/lang-sql'
+import { keymap } from '@codemirror/view'
+import { acceptCompletion } from '@codemirror/autocomplete'
+import { afterUpdate } from 'svelte'
 
   let password = ''
   let dbs: string[] = []
@@ -100,7 +101,9 @@
     editorInitialized = true
   }
 
-  $: if (loggedIn) initEditor()
+  afterUpdate(() => {
+    if (loggedIn) initEditor()
+  })
 </script>
 
 <main>
