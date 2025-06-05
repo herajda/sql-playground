@@ -140,3 +140,30 @@ def admin_create():
             os.remove(dest)
         return jsonify({'error': str(e)}), 400
     return jsonify({'status': 'ok'})
+
+
+@main.route('/api/admin/create_from_file', methods=['POST'])
+def admin_create_from_file():
+    """Create a new database from an uploaded SQL schema file."""
+    require_admin(request)
+    if 'file' not in request.files:
+        return jsonify({'error': 'missing file'}), 400
+    name = request.form.get('name')
+    if not name or not name.endswith('.db'):
+        return jsonify({'error': 'invalid name'}), 400
+    filename = secure_filename(name)
+    dest = os.path.join(UPLOAD_DIR, filename)
+    if os.path.exists(dest):
+        return jsonify({'error': 'already exists'}), 400
+    data = request.files['file'].read().decode('utf-8', errors='ignore')
+    if not data:
+        return jsonify({'error': 'empty file'}), 400
+    try:
+        with sqlite3.connect(dest) as conn:
+            conn.executescript(data)
+            conn.commit()
+    except Exception as e:
+        if os.path.exists(dest):
+            os.remove(dest)
+        return jsonify({'error': str(e)}), 400
+    return jsonify({'status': 'ok'})
