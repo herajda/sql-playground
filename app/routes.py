@@ -44,15 +44,37 @@ def query_api():
 
 @main.route('/api/schema', methods=['GET'])
 def schema_api():
-    """Return database schema information."""
+    """Return database schema information including foreign keys."""
     tables = []
     with sqlite3.connect(get_active_db()) as conn:
-        cur = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+        cur = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        )
         for (name,) in cur.fetchall():
             colcur = conn.execute(f"PRAGMA table_info({name})")
-            columns = [{'name': r[1], 'type': r[2]} for r in colcur.fetchall()]
-            tables.append({'name': name, 'columns': columns})
-    return jsonify({'tables': tables})
+            columns = [
+                {"name": r[1], "type": r[2]}
+                for r in colcur.fetchall()
+            ]
+
+            fkcur = conn.execute(f"PRAGMA foreign_key_list({name})")
+            foreign_keys = [
+                {
+                    "from": r[3],
+                    "to_table": r[2],
+                    "to_column": r[4],
+                }
+                for r in fkcur.fetchall()
+            ]
+
+            tables.append(
+                {
+                    "name": name,
+                    "columns": columns,
+                    "foreign_keys": foreign_keys,
+                }
+            )
+    return jsonify({"tables": tables})
 
 
 @main.route('/api/admin/databases', methods=['GET'])

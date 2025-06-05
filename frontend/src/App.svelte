@@ -18,15 +18,32 @@
   let columns: string[] = []
   let error: string | null = null
 
-  function generateMermaid(tables: { name: string; columns: { name: string; type: string }[] }[]) {
-    const lines = ['erDiagram']
+  function generateMermaid(
+    tables: {
+      name: string
+      columns: { name: string; type: string }[]
+      foreign_keys?: { from: string; to_table: string; to_column: string }[]
+    }[]
+  ) {
+    const lines: string[] = ['erDiagram']
+    const relations = new Set<string>()
+
     for (const table of tables) {
       lines.push(`  ${table.name} {`)
       for (const col of table.columns) {
         lines.push(`    ${col.type} ${col.name}`)
       }
       lines.push('  }')
+
+      if (table.foreign_keys) {
+        for (const fk of table.foreign_keys) {
+          const rel = `${fk.to_table} ||--o{ ${table.name} : ${fk.from}`
+          relations.add(rel)
+        }
+      }
     }
+
+    relations.forEach((r) => lines.push(r))
     return lines.join('\n')
   }
 
