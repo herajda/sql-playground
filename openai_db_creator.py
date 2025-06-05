@@ -2,11 +2,10 @@ import os
 import subprocess
 from pathlib import Path
 
-import openai
 from dotenv import load_dotenv
 
+from openai import OpenAI
 # Load environment variables from a .env file if present
-load_dotenv()
 
 TEMPLATE_PATH = Path(__file__).parent / "init_db.py"
 OUTPUT_SCRIPT = Path("generated_init_db.py")
@@ -15,34 +14,37 @@ OUTPUT_SCRIPT = Path("generated_init_db.py")
 def create_database(user_request: str, db_path: str) -> tuple[bool, str]:
     """Generate and run a DB init script via OpenAI."""
 
+    load_dotenv()  # Load environment variables from .env file if it exists 
     api_key = os.getenv("OPENAI_API_KEY")
+    client = OpenAI(api_key=api_key)
     if not api_key:
         return False, "OPENAI_API_KEY environment variable not set"
 
-    openai.api_key = api_key
 
     with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
         template = f.read()
 
     prompt = (
         "You are an assistant that generates Python scripts to create SQLite databases.\n"
-        "Use the following template as a starting point.\n"
+        "Use the following template as a inspiration.\n"
         "The script should write to the path provided in DB_PATH and, if requested, populate it with random data.\n"
         "Template:\n" + template + "\n" +
         "User request:\n" + user_request + "\n"
-        "Provide only the Python code in your response."
+        "Provide only the Python code in your response. The Python code should be a complete script that can be run to create the database.\n"
     )
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.2,
-        )
+        response = client.chat.completions.create(model="gpt-4.1-mini-2025-04-14",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.2)
     except Exception as e:
         return False, f"OpenAI API call failed: {e}"
 
     code = response.choices[0].message.content
+    if code.startswith("```python"):
+        code = code[10:]
+    if code.endswith("```"):
+        code = code[:-3]
     try:
         OUTPUT_SCRIPT.write_text(code, encoding="utf-8")
     except Exception as e:
@@ -50,6 +52,7 @@ def create_database(user_request: str, db_path: str) -> tuple[bool, str]:
 
     env = os.environ.copy()
     env["DB_PATH"] = db_path
+
 
     try:
         subprocess.run(["python", str(OUTPUT_SCRIPT)], check=True, env=env)
