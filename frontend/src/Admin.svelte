@@ -16,6 +16,7 @@ import { afterUpdate } from 'svelte'
   let createSQL = ''
   let schemaFile: File | null = null
   let openaiRequest = ''
+  let loading = false
   let editorContainer: HTMLDivElement
   let editorInitialized = false
   let showCreateModal = false
@@ -103,17 +104,22 @@ import { afterUpdate } from 'svelte'
   }
 
   async function createDbWithOpenAI() {
-    await fetch('http://localhost:5000/api/admin/openai_create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Admin-Password': password
-      },
-      body: JSON.stringify({ name: createName, prompt: openaiRequest })
-    })
-    createName = ''
-    openaiRequest = ''
-    await login()
+    loading = true
+    try {
+      await fetch('http://localhost:5000/api/admin/openai_create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Password': password
+        },
+        body: JSON.stringify({ name: createName, prompt: openaiRequest })
+      })
+      createName = ''
+      openaiRequest = ''
+      await login()
+    } finally {
+      loading = false
+    }
   }
 
   function openCreateModal() {
@@ -272,6 +278,11 @@ import { afterUpdate } from 'svelte'
     </div>
   {/if}
   </main>
+  {#if loading}
+    <div class="loading-overlay">
+      <div class="loading-text">LOADING ...</div>
+    </div>
+  {/if}
 
 <style>
   .admin {
@@ -328,6 +339,29 @@ import { afterUpdate } from 'svelte'
     display: flex;
     gap: 0.5rem;
   }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    color: #fff;
+    font-size: 1.5rem;
+  }
+
+  .loading-text {
+    animation: blink 1s linear infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 
   .db-table {
     border-collapse: collapse;
