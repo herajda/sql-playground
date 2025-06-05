@@ -10,10 +10,6 @@
   let query = ''
   let editorContainer: HTMLDivElement
   let schemaContainer: HTMLDivElement
-  let showSchema = false
-  let schemaInitialized = false
-  let modalWidth = 'auto'
-  let modalHeight = 'auto'
   let results: any[] | null = null
   let columns: string[] = []
   let error: string | null = null
@@ -65,21 +61,23 @@
 
     mermaid.initialize({
       startOnLoad: false,
-      themeVariables: { fontSize: '12px' },
+      themeVariables: { fontSize: '22px' },
       er: {
-        fontSize: 12,
-        minEntityWidth: 100,
-        minEntityHeight: 100,
-        entityPadding: 10,
+        fontSize: 33,
+
+        minEntityWidth: 300,
+        minEntityHeight: 300,
+        entityPadding: 40,
         nodeSpacing: 100,
         rankSpacing: 100
       },
     })
+
+    loadSchema()
   })
 
   function loadSchema() {
-    if (schemaInitialized) return
-    schemaInitialized = true
+    if (!schemaContainer) return
     fetch('http://localhost:5000/api/schema')
       .then((r) => r.json())
       .then((data) => {
@@ -89,12 +87,6 @@
           .then((res: { svg: string; bindFunctions?: (parent: Element) => void }) => {
             schemaContainer.innerHTML = res.svg
             res.bindFunctions?.(schemaContainer)
-            const svg = schemaContainer.querySelector('svg') as SVGSVGElement | null
-            if (svg) {
-              const bbox = svg.getBBox()
-              modalWidth = Math.min(bbox.width + 100, window.innerWidth * 0.95) + 'px'
-              modalHeight = Math.min(bbox.height + 100, window.innerHeight * 0.95) + 'px'
-            }
           })
       })
   }
@@ -114,67 +106,54 @@
     results = data.results || []
   }
 
-  function openSchema() {
-    showSchema = true
-    loadSchema()
-  }
-
-  function closeSchema() {
-    showSchema = false
-    schemaInitialized = false
-    if (schemaContainer) schemaContainer.innerHTML = ''
-    modalWidth = 'auto'
-    modalHeight = 'auto'
-  }
 </script>
 
 <main>
-  <h1>SQL Playground</h1>
-  <div class="editor" bind:this={editorContainer}></div>
-  <div class="actions">
-    <button on:click={execute}>Execute</button>
-    <button on:click={openSchema}>Show Database Schema</button>
-  </div>
-  {#if error}
-    <p style="color:red">{error}</p>
-  {/if}
-  {#if results !== null}
-    {#if results.length}
-      <table class="results-table" border="1">
-        <thead>
-          <tr>
-            {#each columns as col}
-              <th>{col}</th>
-            {/each}
-          </tr>
-        </thead>
-        <tbody>
-          {#each results as row}
-            <tr>
-              {#each row as value}
-                <td>{value}</td>
-              {/each}
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    {:else}
-      <p>No results.</p>
-    {/if}
-  {/if}
-  {#if showSchema}
-    <div class="modal-overlay" on:click={closeSchema}>
-      <div
-        class="modal"
-        on:click|stopPropagation
-        style="width:{modalWidth}; height:{modalHeight}; max-width:905vw; max-height:905vh;"
-      >
-        <button class="close" on:click={closeSchema}>Close</button>
+  <div class="layout">
+    <div class="left">
+      <div class="editor-section">
+        <h2>Textbox for the SQL Commands</h2>
+        <div class="editor" bind:this={editorContainer}></div>
+      </div>
+      <div class="schema-section">
+        <h2>The ER/UML Diagram</h2>
         <div class="schema" bind:this={schemaContainer}></div>
       </div>
     </div>
-  {/if}
-
+    <div class="middle">
+      <button class="execute" on:click={execute}>EXECUTE</button>
+    </div>
+    <div class="right">
+      <h2>The Results Table</h2>
+      {#if error}
+        <p style="color:red">{error}</p>
+      {/if}
+      {#if results !== null}
+        {#if results.length}
+          <table class="results-table" border="1">
+            <thead>
+              <tr>
+                {#each columns as col}
+                  <th>{col}</th>
+                {/each}
+              </tr>
+            </thead>
+            <tbody>
+              {#each results as row}
+                <tr>
+                  {#each row as value}
+                    <td>{value}</td>
+                  {/each}
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        {:else}
+          <p>No results.</p>
+        {/if}
+      {/if}
+    </div>
+  </div>
 </main>
 
 <style>
@@ -186,17 +165,45 @@
   .editor :global(.cm-gutters) {
     display: none;
   }
-  .actions {
-    margin: 0.5rem 0;
+  .layout {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 8fr 3fr 8fr;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .left {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .editor-section {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
   }
 
+  .schema-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow: auto;
+  }
+
+  .middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .results-table {
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    width: 100%;
   }
   .schema {
     margin-top: 0rem;
@@ -210,31 +217,5 @@
   }
   .schema :global(svg text) {
     font-size: 12px;
-  }
-
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-
-  .modal {
-    background: var(--background, #fff);
-    padding: 1rem;
-    border-radius: 8px;
-    max-width: 900vw;
-    max-height: 900vh;
-    overflow: auto;
-  }
-
-  .close {
-    float: right;
   }
 </style>
