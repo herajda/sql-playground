@@ -45,6 +45,18 @@
     })
     await login()
   }
+
+  async function remove(name: string) {
+    await fetch('http://localhost:5000/api/admin/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Password': password
+      },
+      body: JSON.stringify({ name })
+    })
+    await login()
+  }
 </script>
 
 <main>
@@ -68,6 +80,9 @@
           {db}
           {#if db !== activeDb}
             <button on:click={() => activate(db)}>Activate</button>
+          {/if}
+          {#if db !== 'playground.db'}
+            <button on:click={() => remove(db)}>Delete</button>
           {/if}
         </li>
       {/each}
