@@ -112,11 +112,11 @@
   <div class="layout">
     <div class="left">
       <div class="editor-section">
-        <h2>Textbox for the SQL Commands</h2>
+        <h2>SQL Commands</h2>
         <div class="editor" bind:this={editorContainer}></div>
       </div>
       <div class="schema-section">
-        <h2>The ER/UML Diagram</h2>
+        <h2>ER Diagram</h2>
         <div class="schema" bind:this={schemaContainer}></div>
       </div>
     </div>
@@ -124,7 +124,7 @@
       <button class="execute" on:click={execute}>EXECUTE</button>
     </div>
     <div class="right">
-      <h2>The Results Table</h2>
+      <h2>Results Table</h2>
       {#if error}
         <p style="color:red">{error}</p>
       {/if}
