@@ -95,3 +95,22 @@ def admin_activate():
             return jsonify({'error': 'not found'}), 404
     set_active_db(candidate)
     return jsonify({'status': 'ok'})
+
+
+@main.route('/api/admin/delete', methods=['POST'])
+def admin_delete():
+    """Delete a stored database."""
+    require_admin(request)
+    data = request.get_json(force=True)
+    name = data.get('name')
+    if not name:
+        return jsonify({'error': 'missing name'}), 400
+    if name == os.path.basename(DEFAULT_DB):
+        return jsonify({'error': 'cannot delete default'}), 400
+    path = os.path.join(UPLOAD_DIR, name)
+    if not os.path.exists(path):
+        return jsonify({'error': 'not found'}), 404
+    if os.path.samefile(path, get_active_db()):
+        set_active_db(DEFAULT_DB)
+    os.remove(path)
+    return jsonify({'status': 'ok'})
