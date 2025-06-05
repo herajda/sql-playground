@@ -52,10 +52,10 @@
       er: {
         fontSize: 12,
         minEntityWidth: 100,
-        minEntityHeight: 50,
+        minEntityHeight: 100,
         entityPadding: 10,
-        nodeSpacing: -50,
-        rankSpacing: -100
+        nodeSpacing: 100,
+        rankSpacing: 100
       },
     })
   })
@@ -75,8 +75,8 @@
             const svg = schemaContainer.querySelector('svg') as SVGSVGElement | null
             if (svg) {
               const bbox = svg.getBBox()
-              modalWidth = Math.min(bbox.width + 40, window.innerWidth * 0.95) + 'px'
-              modalHeight = Math.min(bbox.height + 40, window.innerHeight * 0.95) + 'px'
+              modalWidth = Math.min(bbox.width + 200, window.innerWidth * 0.95) + 'px'
+              modalHeight = Math.min(bbox.height + 100, window.innerHeight * 0.25) + 'px'
             }
           })
       })
