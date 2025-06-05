@@ -18,6 +18,9 @@ import { afterUpdate } from 'svelte'
   let openaiRequest = ''
   let editorContainer: HTMLDivElement
   let editorInitialized = false
+  let showCreateModal = false
+  let createStep = 1
+  let createOption: 'sql' | 'file' | 'openai' = 'sql'
 
   async function login() {
     error = null
@@ -113,6 +116,32 @@ import { afterUpdate } from 'svelte'
     await login()
   }
 
+  function openCreateModal() {
+    createName = ''
+    createSQL = ''
+    schemaFile = null
+    openaiRequest = ''
+    createStep = 1
+    createOption = 'sql'
+    editorInitialized = false
+    showCreateModal = true
+  }
+
+  function closeCreateModal() {
+    showCreateModal = false
+  }
+
+  async function handleCreate() {
+    if (createOption === 'sql') {
+      await createDb()
+    } else if (createOption === 'file') {
+      await createDbFromFile()
+    } else {
+      await createDbWithOpenAI()
+    }
+    showCreateModal = false
+  }
+
   function initEditor() {
     if (editorInitialized || !editorContainer) return
     const state = EditorState.create({
@@ -133,7 +162,9 @@ import { afterUpdate } from 'svelte'
   }
 
   afterUpdate(() => {
-    if (loggedIn) initEditor()
+    if (loggedIn && showCreateModal && createStep === 2 && createOption === 'sql') {
+      initEditor()
+    }
   })
 </script>
 
@@ -175,33 +206,56 @@ import { afterUpdate } from 'svelte'
     />
     <button on:click={upload}>Upload</button>
 
-    <h2>Create Database</h2>
-    <input
-      type="text"
-      placeholder="Name (example.db)"
-      bind:value={createName}
-    />
-    <div class="editor" bind:this={editorContainer}></div>
-      <button on:click={createDb}>Create</button>
-      <div class="file-create">
-        <input
-          type="file"
-          accept=".sql,.txt"
-        on:change={(e) => {
-          const input = e.target as HTMLInputElement
-          schemaFile = input.files?.[0] || null
-        }}
-        />
-        <button on:click={createDbFromFile}>Create From File</button>
-      </div>
-      <h2>Create With OpenAI</h2>
-      <textarea
-        rows="3"
-        placeholder="Describe the desired database"
-        bind:value={openaiRequest}
-      ></textarea>
-      <button on:click={createDbWithOpenAI}>Create With OpenAI</button>
+    <button on:click={openCreateModal}>Create Database</button>
     {/if}
+
+  {#if showCreateModal}
+    <div class="modal-overlay" on:click={closeCreateModal}>
+      <div class="modal" on:click|stopPropagation>
+        {#if createStep === 1}
+          <h2>Name Database</h2>
+          <input
+            type="text"
+            placeholder="Name (example.db)"
+            bind:value={createName}
+          />
+          <div class="actions">
+            <button on:click={() => (createStep = 2)}>Next</button>
+            <button on:click={closeCreateModal}>Cancel</button>
+          </div>
+        {:else}
+          <h2>Choose Creation Method</h2>
+          <select bind:value={createOption}>
+            <option value="sql">Enter SQL</option>
+            <option value="file">Upload SQL File</option>
+            <option value="openai">Use OpenAI</option>
+          </select>
+          {#if createOption === 'sql'}
+            <div class="editor" bind:this={editorContainer}></div>
+          {:else if createOption === 'file'}
+            <input
+              type="file"
+              accept=".sql,.txt"
+              on:change={(e) => {
+                const input = e.target as HTMLInputElement
+                schemaFile = input.files?.[0] || null
+              }}
+            />
+          {:else}
+            <textarea
+              rows="3"
+              placeholder="Describe the desired database"
+              bind:value={openaiRequest}
+            ></textarea>
+          {/if}
+          <div class="actions">
+            <button on:click={handleCreate}>Create</button>
+            <button on:click={closeCreateModal}>Cancel</button>
+          </div>
+        {/if}
+      </div>
+    </div>
+  {/if}
   </main>
 
 <style>
@@ -230,5 +284,33 @@ import { afterUpdate } from 'svelte'
   textarea {
     width: 100%;
     margin-top: 0.5rem;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    background: var(--background, #fff);
+    padding: 1rem;
+    border-radius: 8px;
+    max-width: 95vw;
+    max-height: 95vh;
+    overflow: auto;
+  }
+
+  .actions {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
   }
 </style>
