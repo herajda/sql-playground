@@ -92,8 +92,8 @@
             const svg = schemaContainer.querySelector('svg') as SVGSVGElement | null
             if (svg) {
               const bbox = svg.getBBox()
-              modalWidth = Math.min(bbox.width + 200, window.innerWidth * 0.95) + 'px'
-              modalHeight = Math.min(bbox.height + 100, window.innerHeight * 0.25) + 'px'
+              modalWidth = Math.min(bbox.width + 100, window.innerWidth * 0.95) + 'px'
+              modalHeight = Math.min(bbox.height + 100, window.innerHeight * 0.95) + 'px'
             }
           })
       })
@@ -167,7 +167,7 @@
       <div
         class="modal"
         on:click|stopPropagation
-        style="width:{modalWidth}; height:{modalHeight}; max-width:95vw; max-height:95vh;"
+        style="width:{modalWidth}; height:{modalHeight}; max-width:905vw; max-height:905vh;"
       >
         <button class="close" on:click={closeSchema}>Close</button>
         <div class="schema" bind:this={schemaContainer}></div>
@@ -224,8 +224,8 @@
     background: var(--background, #fff);
     padding: 1rem;
     border-radius: 8px;
-    max-width: 95vw;
-    max-height: 95vh;
+    max-width: 900vw;
+    max-height: 900vh;
     overflow: auto;
   }
 
