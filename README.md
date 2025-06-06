@@ -14,37 +14,7 @@ The goal of this project is to provide an interactive environment where users ca
 
 This project is useful for learning, demonstrations, and experimenting with SQL syntax without needing to install any software locally.
 
-## Features (Planned)
-
-* [x] Flask web server scaffold
-* [x] SQLite3 database with sample data
-* [x] Frontend input for SQL queries
-* [x] Output panel for query results or error messages
-* [x] Schema visualization (ERD/UML-style)
-* [x] Syntax highlighting for the SQL editor
-* [x] UML-style schema viewer powered by Mermaid
-* [x] Password protected admin mode to manage databases
-* [x] Create databases from SQL scripts in the admin interface
-* [x] Generate databases using OpenAI (via admin UI or `openai_db_creator.py`)
-* [x] Toggle read-only mode to prevent modification queries
-
-## Setup Instructions
-
-1. Install backend dependencies: `pip install -r requirements.txt`
-2. Initialize the database with `python init_db.py`
-3. Start the Flask API using `python run.py` (default URL: [http://127.0.0.1:5000/](http://127.0.0.1:5000/))
-4. In `frontend/`, run `npm install` to install frontend packages.
-5. Launch the Svelte app with `npm run dev` and open [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
-6. Copy `.env.example` to `.env` and set `ADMIN_PASSWORD=<your password>` (and any other environment settings).
-7. Admin endpoints require the `X-Admin-Password` header with the same password.
-8. The admin interface is available at `/admin` and requires the same password.
-9. The admin page also lets you create a new database by entering SQL or uploading a schema file.
-10. For OpenAI-assisted database generation add `OPENAI_API_KEY=<your key>` to `.env` and either run `python openai_db_creator.py` or use the admin page's "Create With OpenAI" form.
-11. Use the admin page's "Read Only Mode" checkbox to control whether regular users can modify the database.
-
 ## Running with Docker
-
-You can also build and run the application using Docker.
 
 ### Build the image
 
