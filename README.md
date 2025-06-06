@@ -41,3 +41,25 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 9. The admin page also lets you create a new database by entering SQL or uploading a schema file.
 10. For OpenAI-assisted database generation add `OPENAI_API_KEY=<your key>` to `.env` and either run `python openai_db_creator.py` or use the admin page's "Create With OpenAI" form.
 11. Use the admin page's "Read Only Mode" checkbox to control whether regular users can modify the database.
+
+## Running with Docker
+
+You can also build and run the application using Docker.
+
+### Build the image
+
+```bash
+docker build -t sql-playground .
+```
+
+### Run the container
+
+
+```bash
+docker run -p 5000:5000 \
+  -e ADMIN_PASSWORD=<your password> \
+  -e OPENAI_API_KEY=<your key> \
+  sql-playground
+```
+
+The container exposes port 5000 and accepts optional environment variables such as `ADMIN_PASSWORD` and `OPENAI_API_KEY` for customizing the admin password or enabling the OpenAI features. They can be provided with `-e` flags when running the image.
