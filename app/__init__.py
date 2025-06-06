@@ -1,6 +1,7 @@
 # Initializes the Flask app
 
-from flask import Flask
+import os
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -13,6 +14,15 @@ def create_app():
 
     app = Flask(__name__)
     CORS(app)
+        # Serve the Single-Page App
+    @app.route("/", defaults={"path": ""})
+    @app.route("/<path:path>")
+    def spa(path):
+        file_path = os.path.join(app.static_folder, path)
+        if path and os.path.exists(file_path):
+            return send_from_directory(app.static_folder, path)
+        # anything else → index.html, so the Svelte router can take over
+        return send_from_directory(app.static_folder, "index.html")
 
     from .routes import main
     app.register_blueprint(main)

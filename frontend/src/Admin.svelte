@@ -26,7 +26,7 @@ import { afterUpdate } from 'svelte'
 
   async function login() {
     error = null
-    const res = await fetch('http://localhost:5000/api/admin/databases', {
+    const res = await fetch('/api/admin/databases', {
       headers: { 'X-Admin-Password': password }
     })
     if (!res.ok) {
@@ -42,7 +42,7 @@ import { afterUpdate } from 'svelte'
   }
 
   async function loadSettings() {
-    const res = await fetch('http://localhost:5000/api/admin/settings', {
+    const res = await fetch('/api/admin/settings', {
       headers: { 'X-Admin-Password': password }
     })
     if (res.ok) {
@@ -52,7 +52,7 @@ import { afterUpdate } from 'svelte'
   }
 
   async function toggleReadOnly() {
-    await fetch('http://localhost:5000/api/admin/settings', {
+    await fetch('/api/admin/settings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ import { afterUpdate } from 'svelte'
     if (!uploadFile) return
     const fd = new FormData()
     fd.append('file', uploadFile)
-    await fetch('http://localhost:5000/api/admin/upload', {
+    await fetch('/api/admin/upload', {
       method: 'POST',
       headers: { 'X-Admin-Password': password },
       body: fd
@@ -75,7 +75,7 @@ import { afterUpdate } from 'svelte'
   }
 
   async function activate(name: string) {
-    await fetch('http://localhost:5000/api/admin/activate', {
+    await fetch('/api/admin/activate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ import { afterUpdate } from 'svelte'
   }
 
   async function remove(name: string) {
-    await fetch('http://localhost:5000/api/admin/delete', {
+    await fetch('/api/admin/delete', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ import { afterUpdate } from 'svelte'
   }
 
   async function createDb() {
-    await fetch('http://localhost:5000/api/admin/create', {
+    await fetch('/api/admin/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ import { afterUpdate } from 'svelte'
     const fd = new FormData()
     fd.append('file', schemaFile)
     fd.append('name', createName)
-    await fetch('http://localhost:5000/api/admin/create_from_file', {
+    await fetch('/api/admin/create_from_file', {
       method: 'POST',
       headers: { 'X-Admin-Password': password },
       body: fd
@@ -129,7 +129,7 @@ import { afterUpdate } from 'svelte'
   async function createDbWithOpenAI() {
     loading = true
     try {
-      await fetch('http://localhost:5000/api/admin/openai_create', {
+      await fetch('/api/admin/openai_create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

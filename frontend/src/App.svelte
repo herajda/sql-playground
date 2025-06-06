@@ -78,7 +78,7 @@
 
   function loadSchema() {
     if (!schemaContainer) return
-    fetch('http://localhost:5000/api/schema')
+    fetch('/api/schema')
       .then((r) => r.json())
       .then((data) => {
         const diagram = generateMermaid(data.tables)
@@ -95,7 +95,7 @@
   async function execute() {
     error = null
     results = null
-    const res = await fetch('http://localhost:5000/api/query', {
+    const res = await fetch('/api/query', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query })
