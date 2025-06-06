@@ -1,17 +1,17 @@
 # SQL Playground
 
 SQL Playground is a simple web application built with Python and Flask. Its purpose is to help users learn and experiment with SQL in a web-based environment, using a pre-populated SQLite3 database. It is ideal for teacher-student interaction and classroom use.
-## Project Idea
+## Features
 
-The goal of this project is to provide an interactive environment where users can:
+SQL Playground provides an interactive environment where users can:
 
-* View the structure of the database tables (columns, types, relationships).
-* Enter SQL queries into a text input box and see the results displayed on the web page.
-* Receive error messages and helpful feedback if the query is incorrect.
+* View the structure of database tables, including columns, data types, and relationships.
+* Enter SQL queries into a text input box and see the results displayed directly on the page.
+* Receive clear error messages and helpful feedback when queries are incorrect.
 * Work with a predefined SQLite3 database hosted on the server.
-* Explore and understand database design via automatic UML-style schema visualization.
-
-This project is useful for learning, demonstrations, and experimenting with SQL syntax without needing to install any software locally.
+* Explore and understand database design through automatic UML-style schema visualization.
+* 
+This project is useful for learning, demonstrations, and hands-on practice with SQL syntax—no local setup required. Its design makes it especially effective in educational settings.
 
 ## Running with Docker
 
