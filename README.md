@@ -1,7 +1,6 @@
 # SQL Playground
 
-SQL Playground is a simple web application built with Python and Flask. Its purpose is to help users learn and experiment with SQL in a web-based environment, using a pre-populated SQLite3 database.
-
+SQL Playground is a simple web application built with Python and Flask. Its purpose is to help users learn and experiment with SQL in a web-based environment, using a pre-populated SQLite3 database. It is ideal for teacher-student interaction and classroom use.
 ## Project Idea
 
 The goal of this project is to provide an interactive environment where users can:
