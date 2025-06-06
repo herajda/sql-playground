@@ -32,3 +32,14 @@ docker run -p 5000:5000 \
 ```
 
 The container exposes port 5000 and accepts optional environment variables such as `ADMIN_PASSWORD` and `OPENAI_API_KEY` for customizing the admin password or enabling the OpenAI features. They can be provided with `-e` flags when running the image.
+
+## Admin Interface
+
+Once the server is running, visit `http://localhost:5000/admin` in your browser to access the admin page. The login form asks for the password specified by the `ADMIN_PASSWORD` environment variable (defaults to `admin123`). After signing in you can:
+
+* Toggle read-only mode for the playground.
+* Upload additional `.db` files and activate them as the current database.
+* Delete previously uploaded databases.
+* Create new databases from SQL text, from an uploaded SQL file, or via the OpenAI integration when `OPENAI_API_KEY` is set.
+
+These actions allow you to manage the databases available to users without restarting the container.
