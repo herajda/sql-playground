@@ -35,7 +35,7 @@ This project is useful for learning, demonstrations, and experimenting with SQL 
 3. Start the Flask API using `python run.py` (default URL: [http://127.0.0.1:5000/](http://127.0.0.1:5000/))
 4. In `frontend/`, run `npm install` to install frontend packages.
 5. Launch the Svelte app with `npm run dev` and open [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
-6. Create a `.env` file with `ADMIN_PASSWORD=<your password>` (and any other environment settings).
+6. Copy `.env.example` to `.env` and set `ADMIN_PASSWORD=<your password>` (and any other environment settings).
 7. Admin endpoints require the `X-Admin-Password` header with the same password.
 8. The admin interface is available at `/admin` and requires the same password.
 9. The admin page also lets you create a new database by entering SQL or uploading a schema file.
